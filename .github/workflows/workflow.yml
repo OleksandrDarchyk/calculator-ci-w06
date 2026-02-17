@@ -18,6 +18,12 @@ jobs:
         with:
           dotnet-version: "8.0.x"
 
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore -c Release
+
       - name: Install required tools
         # Write the commands to install ReportGenerator and Stryker into your pipeline.
         run: |
@@ -28,7 +34,7 @@ jobs:
       - name: Run unit tests
         # Write a command to execute unit tests while collecting code coverage
         run: |
-          dotnet test --collect:"XPlat Code Coverage" --results-directory ./TestResults
+          dotnet test --no-build -c Release --collect:"XPlat Code Coverage" --results-directory ./TestResults
 
       - name: Generate report
         # Use the ReportGenerator tool to generate a report from the code coverage results
@@ -57,4 +63,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: stryker-report
-          path: StrykerOutput
+          path: "**/StrykerOutput/**"
