@@ -1,4 +1,5 @@
 name: workflow.yml
+
 on:
   push:
     branches:
@@ -7,11 +8,12 @@ on:
 jobs:
   integration:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Fetch all history for accurate results of code analysis
+          fetch-depth: 0
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -19,28 +21,45 @@ jobs:
           dotnet-version: "8.0.x"
 
       - name: Install required tools
-        # Write the commands to install ReportGenerator and Stryker into your pipeline.
         run: |
+          dotnet tool install -g dotnet-sonarscanner
           dotnet tool install -g dotnet-reportgenerator-globaltool
           dotnet tool install -g dotnet-stryker
           echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
-      - name: Run unit tests
-        # Write a command to execute unit tests while collecting code coverage
+      - name: Sonar Begin
         run: |
-          dotnet test --collect:"XPlat Code Coverage"
+          dotnet sonarscanner begin \
+            /k:"${{ vars.SONAR_PROJECT_KEY }}" \
+            /d:sonar.host.url="${{ vars.SONAR_HOST_URL }}" \
+            /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
+            /d:sonar.coverageReportPaths="coveragereport/SonarQube.xml" \
+            /d:sonar.qualitygate.wait=true \
+            /d:sonar.qualitygate.timeout=300
 
-      - name: Generate report
-        # Use the ReportGenerator tool to generate a report from the code coverage results
+      - name: Build
+        run: dotnet build --configuration Release
+
+      - name: Run unit tests (with coverage)
         run: |
-          reportgenerator -reports:**/coverage.cobertura.xml -targetdir:coveragereport -reporttypes:Html
+          dotnet test --collect:"XPlat Code Coverage" --results-directory TestResults
+
+      - name: Generate SonarQube coverage report
+        run: |
+          reportgenerator \
+            -reports:TestResults/**/coverage.cobertura.xml \
+            -targetdir:coveragereport \
+            -reporttypes:SonarQube
 
       - name: Run Mutation Tests
         run: |
           dotnet stryker --threshold-high 80 --threshold-low 80
-      
+
+      - name: Sonar End (Quality Gate)
+        if: always()
+        run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+
       - name: Collect Coverage Report
-        # Complete this step sp it uploads the coverage report to the artifacts - make it run always even if previous steps fail
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -48,7 +67,6 @@ jobs:
           path: coveragereport
 
       - name: Collect Stryker Report
-        # Complete this step so it uploads the Stryker report to the artifacts - make it run always even if previous steps fail
         if: always()
         uses: actions/upload-artifact@v4
         with:
