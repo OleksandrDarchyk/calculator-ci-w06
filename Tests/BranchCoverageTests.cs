@@ -57,8 +57,11 @@ public class BranchCoverageTests
         calc.Add(2, 3);
         var cacheCountAfterSecond = calc.CacheCount;
 
-        Assert.That(cacheCountAfterFirst, Is.EqualTo(1));
-        Assert.That(cacheCountAfterSecond, Is.EqualTo(1));
+        Assert.Multiple(() =>
+        {
+            Assert.That(cacheCountAfterFirst, Is.EqualTo(1));
+            Assert.That(cacheCountAfterSecond, Is.EqualTo(1));
+        });
     }
 
     [Test]
@@ -93,7 +96,10 @@ public class BranchCoverageTests
         calc.Factorial(5);
         var afterSecond = calc.CacheCount;
 
-        Assert.That(afterFirst, Is.EqualTo(1));
-        Assert.That(afterSecond, Is.EqualTo(1));
+        Assert.Multiple(() =>
+        {
+            Assert.That(afterFirst, Is.EqualTo(1));
+            Assert.That(afterSecond, Is.EqualTo(1));
+        });
     }
 }
