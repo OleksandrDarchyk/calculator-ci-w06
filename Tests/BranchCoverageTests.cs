@@ -60,4 +60,41 @@ public class BranchCoverageTests
         Assert.That(cacheCountAfterFirst, Is.EqualTo(1));
         Assert.That(cacheCountAfterSecond, Is.EqualTo(1));
     }
+    
+    [Test]
+    public void Divide_ByZero_Throws()
+    {
+        var calc = new SimpleCalculator();
+        Assert.Throws<DivideByZeroException>(() => calc.Divide(10, 0));
+    }
+
+    [Test]
+    public void IsPrime_Two_ReturnsTrue()
+    {
+        var calc = new SimpleCalculator();
+        Assert.That(calc.IsPrime(2), Is.True);
+    }
+
+    [Test]
+    public void IsPrime_SquareOfPrime_ReturnsFalse()
+    {
+        var calc = new SimpleCalculator();
+        Assert.That(calc.IsPrime(25), Is.False);
+    }
+
+    [Test]
+    public void CachedCalculator_Factorial_CacheHit_DoesNotGrowCache()
+    {
+        var calc = new CachedCalculator();
+
+        calc.Factorial(5);
+        var afterFirst = calc._cache.Count;
+
+        calc.Factorial(5);
+        var afterSecond = calc._cache.Count;
+
+        Assert.That(afterFirst, Is.EqualTo(1));
+        Assert.That(afterSecond, Is.EqualTo(1));
+    }
+
 }

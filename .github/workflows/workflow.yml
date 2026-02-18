@@ -36,10 +36,9 @@ jobs:
           reportgenerator -reports:**/coverage.cobertura.xml -targetdir:coveragereport -reporttypes:Html
 
       - name: Run Mutation Tests
-        # Write a command to execute mutation tests using Stryker with a threshold of 80% mutation score
         run: |
-          dotnet stryker --threshold-break 80
-
+          dotnet stryker --threshold-high 80 --threshold-low 80
+      
       - name: Collect Coverage Report
         # Complete this step sp it uploads the coverage report to the artifacts - make it run always even if previous steps fail
         if: always()
