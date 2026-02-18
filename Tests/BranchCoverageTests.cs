@@ -52,15 +52,15 @@ public class BranchCoverageTests
         var calc = new CachedCalculator();
 
         calc.Add(2, 3);
-        var cacheCountAfterFirst = calc._cache.Count;
+        var cacheCountAfterFirst = calc.CacheCount;
 
         calc.Add(2, 3);
-        var cacheCountAfterSecond = calc._cache.Count;
+        var cacheCountAfterSecond = calc.CacheCount;
 
         Assert.That(cacheCountAfterFirst, Is.EqualTo(1));
         Assert.That(cacheCountAfterSecond, Is.EqualTo(1));
     }
-    
+
     [Test]
     public void Divide_ByZero_Throws()
     {
@@ -88,13 +88,12 @@ public class BranchCoverageTests
         var calc = new CachedCalculator();
 
         calc.Factorial(5);
-        var afterFirst = calc._cache.Count;
+        var afterFirst = calc.CacheCount;
 
         calc.Factorial(5);
-        var afterSecond = calc._cache.Count;
+        var afterSecond = calc.CacheCount;
 
         Assert.That(afterFirst, Is.EqualTo(1));
         Assert.That(afterSecond, Is.EqualTo(1));
     }
-
 }

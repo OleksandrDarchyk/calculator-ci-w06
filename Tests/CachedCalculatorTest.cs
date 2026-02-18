@@ -7,15 +7,9 @@ public class CachedCalculatorTest
     [Test]
     public void Add()
     {
-        // Arrange
         var calc = new CachedCalculator();
-        var a = 2;
-        var b = 3;
+        var result = calc.Add(2, 3);
 
-        // Act
-        var result = calc.Add(a, b);
-
-        // Assert
         Assert.That(result, Is.EqualTo(5));
     }
     
@@ -27,7 +21,7 @@ public class CachedCalculatorTest
         calc.Add(2, 3);
         calc.Add(3, 2);
 
-        Assert.That(calc._cache.Count, Is.EqualTo(2));
+        Assert.That(calc.CacheCount, Is.EqualTo(2));
     }
 
     [Test]
@@ -50,6 +44,7 @@ public class CachedCalculatorTest
         var calc = new SimpleCalculator();
         Assert.That(calc.Divide(10, 2), Is.EqualTo(5));
     }
+
     [Test]
     public void CachedCalculator_ReturnsSameResult_FromCache()
     {
@@ -60,5 +55,4 @@ public class CachedCalculatorTest
 
         Assert.That(first, Is.EqualTo(second));
     }
-
 }
